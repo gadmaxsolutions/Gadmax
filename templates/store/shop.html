@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <!-- Breadcrumb Section Begin -->
+    <section class="breadcrumb-option">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="breadcrumb__text">
+                        {% if 'search' in request.path %}
+                            <h4>Search Results</h4>
+                        {% else %}
+                            <h4>Shop</h4>
+                            <div class="breadcrumb__links">
+                                <a href="{% url 'home' %}">Home</a>
+                                <span>Shop</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Breadcrumb Section End -->
+
+    <!-- Shop Section Begin -->
+    <section class="shop spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="shop__sidebar">
+
+                        <div class="shop__sidebar__accordion">
+                            <div class="accordion" id="accordionExample">
+                                <div class="card">
+                                    <div class="card-heading">
+                                        <a data-toggle="collapse" data-target="#collapseOne">Categories</a>
+                                    </div>
+                                    <div id="collapseOne" class="collapse " data-parent="#accordionExample">
+                                        <div class="card-body">
+                                            <div class="shop__sidebar__categories">
+                                                <ul class="nice-scroll">
+                                                    <li><a href="{% url 'store_app:shop' %}">All categories</a></li>
+                                                    {% for category in link %}
+                                                    <li><a href="{{ category.get_url }}">{{ category.category_name }}</a></li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-heading">
+                                        <a data-toggle="collapse" data-target="#collapseTwo">Brands</a>
+                                    </div>
+                                    <div id="collapseTwo" class="collapse " data-parent="#accordionExample">
+                                        <div class="card-body">
+                                            <div class="shop__sidebar__brand">
+                                                <ul>
+                                                    {% for brand in links %}
+                                                    <li><a href="{{ brand.get_url }}">{{ brand.brand_name }}</a></li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-9">
+                    <div class="shop__product__option">
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                <div class="shop__product__option__left">
+                                    <p>{{ product_count }} results</p>
+                                </div>
+                            </div>
+<!--                            <div class="col-lg-6 col-md-6 col-sm-6">-->
+<!--                                <div class="shop__product__option__right">-->
+<!--                                    <p>Sort by Price:</p>-->
+<!--                                    <select>-->
+<!--                                        <option value="">Low To High</option>-->
+<!--                                        <option value="">$0 - $55</option>-->
+<!--                                        <option value="">$55 - $100</option>-->
+<!--                                    </select>-->
+<!--                                </div>-->
+<!--                            </div>-->
+                        </div>
+                    </div>
+                    <div class="row">
+                        {% if products %}
+                            {% for product in products %}
+                            <div class="col-lg-4 col-md-6 col-sm-6">
+                                <div class="product__item">
+                                    <div class="product__item__pic set-bg" data-setbg="{{ product.images.url }}" style="object-fit:cover">
+                                        <ul class="product__hover">
+                                            <li><a href="#"><img src="{% static 'img/icon/heart.png' %}" alt=""></a></li>
+                                            <li><a href="#"><img src="{% static 'img/icon/compare.png' %}" alt=""> <span>Compare</span></a>
+                                            </li>
+                                            <li><a href="#"><img src="{% static 'img/icon/search.png' %}" alt=""></a></li>
+                                        </ul>
+                                    </div>
+                                    <div class="product__item__text">
+                                        <h6>{{ product.product_name }}</h6>
+                                        <a href="{{ product.get_url }}" class="add-cart">View Details</a>
+                                        {% if product.averageReview %}
+                                            <div class="rating">
+                                                <i class="fa fa-star{% if product.averageReview < 0.5 %}-o{% elif product.averageReview >= 0.5 and product.averageReview < 1 %}-half-o{% endif %}" aria-hidden="true"></i>
+                                                <i class="fa fa-star{% if product.averageReview < 1.5 %}-o{% elif product.averageReview >= 1.5 and product.averageReview < 2 %}-half-o{% endif %}" aria-hidden="true"></i>
+                                                <i class="fa fa-star{% if product.averageReview < 2.5 %}-o{% elif product.averageReview >= 2.5 and product.averageReview < 3 %}-half-o{% endif %}" aria-hidden="true"></i>
+                                                <i class="fa fa-star{% if product.averageReview < 3.5 %}-o{% elif product.averageReview >= 3.5 and product.averageReview < 4 %}-half-o{% endif %}" aria-hidden="true"></i>
+                                                <i class="fa fa-star{% if product.averageReview < 4.5 %}-o{% elif product.averageReview >= 4.5 and product.averageReview < 5 %}-half-o{% endif %}" aria-hidden="true"></i>
+                                            </div>
+                                        {% endif %}
+                                        <h5><i class="fa-solid fa-indian-rupee-sign"></i> {{ product.price }}</h5>
+
+                                        <div class="product__color__select">
+                                            <label for="pc-4">
+                                                <input type="radio" id="pc-4">
+                                            </label>
+                                            <label class="active black" for="pc-5">
+                                                <input type="radio" id="pc-5">
+                                            </label>
+                                            <label class="grey" for="pc-6">
+                                                <input type="radio" id="pc-6">
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div>
+                                <h2>No Results found. Please try again.</h2>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <nav class="mt-4" aria-label="Page navigation sample"style="margin-left:39%;">
+						{% if products.has_other_pages %}
+                        <ul class="pagination">
+                            {% if products.has_previous %}
+                                <li class="page-item"><a class="page-link" href="?page={{ products.previous_page_number }}">Prev</a></li>
+                            {% else %}
+                                <li class="page-item disabled"><a class="page-link" href="">Prev</a></li>
+                            {% endif %}
+                            {% for i in products.paginator.page_range %}
+                                {% if products.number == i %}
+                                    <li class="page-item active"><a class="page-link" href="">{{ i }}</a></li>
+                                {% else %}
+                                    <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                            {% if products.has_next %}
+                                <li class="page-item"><a class="page-link" href="?page={{ products.next_page_number }}">Next</a></li>
+						    {% else %}
+                                <li class="page-item disabled"><a class="page-link" href="">Next</a></li>
+                            {% endif %}
+                        </ul>
+                        {% endif %}
+				    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Shop Section End -->
+
+{% endblock %}

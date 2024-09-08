@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <!-- Hero Section Begin -->
+    <section class="hero">
+        <div class="hero__slider owl-carousel" >
+            <div class="hero__items set-bg" style="height:80vh" data-setbg="{% static 'img/banner/banner_11.jpg' %}">
+                <div class="container" style="padding-left:50px;">
+                    <div class="row " >
+                        <div class="col-xl-5 col-lg-7 col-md-6 " >
+                            <div class="hero__text" >
+
+                                <h2 style="color:white;">Best Collections 2024</h2>
+                                <p style="font-size:25px; color:white;font-weight:bold;">You can buy products at affordable prices</p>
+                                <a href="{% url 'store_app:shop' %}" class="primary-btn bg-secondary">Shop now <span class="arrow_right"></span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero__items set-bg" style="height:80vh" data-setbg="{% static 'img/banner/banner_12.jpg' %}">
+                <div class="container" style="padding-left:50px;">
+                    <div class="row">
+                        <div class="col-xl-5 col-lg-7 col-md-8">
+                            <div class="hero__text">
+                                <h2 style="color:white;">Best Collections 2024</h2>
+                                <p style="font-size:25px; color:white;font-weight:bold;">You can buy products at affordable prices</p>
+                                <a href="{% url 'store_app:shop' %}" class="primary-btn bg-secondary">Shop now <span class="arrow_right"></span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Hero Section End -->
+
+    <!-- Product Section Begin -->
+    {% if products %}
+    <section class="product spad" style="margin-top:20px;">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <ul class="filter__controls">
+                        <li class="active" data-filter=".new-arrivals">New Arrivals</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row product__filter">
+                {% for product in products %}
+                <div class="col-lg-3 col-md-6 col-sm-6 col-md-6 col-sm-6 mix new-arrivals">
+                    <div class="product__item">
+
+                        <div class="product__item__pic set-bg" data-setbg="{{ product.images.url }}">
+
+                            <ul class="product__hover">
+                                <li><a href="#"><img src="{% static 'img/icon/heart.png' %}" alt=""></a></li>
+                                <li><a href="#"><img src="{% static 'img/icon/compare.png' %}" alt=""> <span>Compare</span></a></li>
+                                <li><a href="#"><img src="{% static 'img/icon/search.png' %}" alt=""></a></li>
+                            </ul>
+                        </div>
+                        <div class="product__item__text">
+                            <h6>{{ product.product_name }}</h6>
+                            <a href="{{ product.get_url }}" class="add-cart">View Details</a>
+                            {% if product.averageReview %}
+                                <div class="rating-star">
+
+                                    <i class="fa fa-star{% if product.averageReview < 0.5 %}-o{% elif product.averageReview >= 0.5 and product.averageReview < 1 %}-half-o{% endif %}" aria-hidden="true"></i>
+                                    <i class="fa fa-star{% if product.averageReview < 1.5 %}-o{% elif product.averageReview >= 1.5 and product.averageReview < 2 %}-half-o{% endif %}" aria-hidden="true"></i>
+                                    <i class="fa fa-star{% if product.averageReview < 2.5 %}-o{% elif product.averageReview >= 2.5 and product.averageReview < 3 %}-half-o{% endif %}" aria-hidden="true"></i>
+                                    <i class="fa fa-star{% if product.averageReview < 3.5 %}-o{% elif product.averageReview >= 3.5 and product.averageReview < 4 %}-half-o{% endif %}" aria-hidden="true"></i>
+                                    <i class="fa fa-star{% if product.averageReview < 4.5 %}-o{% elif product.averageReview >= 4.5 and product.averageReview < 5 %}-half-o{% endif %}" aria-hidden="true"></i>
+
+                                </div>
+                            {% endif %}
+                             <h5><i class="fa-solid fa-indian-rupee-sign"></i> {{ product.price }}</h5>
+                            <div class="product__color__select">
+                                <label for="pc-1">
+                                    <input type="radio" id="pc-1">
+                                </label>
+                                <label class="active black" for="pc-2">
+                                    <input type="radio" id="pc-2">
+                                </label>
+                                <label class="grey" for="pc-3">
+                                    <input type="radio" id="pc-3">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="text-center ">
+                 <a href="{% url 'store_app:shop' %}" class="primary-btn bg-secondary ">view more<span class="arrow_right"></span></a>
+            </div>
+
+        </div>
+
+    </section>
+
+    {% endif %}
+    <!-- Product Section End -->
+
+
+    <!-- Latest Blog Section Begin -->
+    <section class="latest spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="section-title">
+                        <span>Latest News</span>
+                        <h2>Fashion New Trends</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-4 col-md-6 col-sm-6">
+                    <div class="blog__item">
+                        <div class="blog__item__pic set-bg" data-setbg="{% static 'img/blog/blog-1.jpg' %}"></div>
+                        <div class="blog__item__text">
+                            <span><img src="{% static 'img/icon/calendar.png' %}" alt=""> 16 February 2020</span>
+                            <h5>What Curling Irons Are The Best Ones</h5>
+                            <a href="#">Read More</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-6">
+                    <div class="blog__item">
+                        <div class="blog__item__pic set-bg" data-setbg="{% static 'img/blog/blog-2.jpg' %}"></div>
+                        <div class="blog__item__text">
+                            <span><img src="{% static 'img/icon/calendar.png' %}" alt=""> 21 February 2020</span>
+                            <h5>Eternity Bands Do Last Forever</h5>
+                            <a href="#">Read More</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-6">
+                    <div class="blog__item">
+                        <div class="blog__item__pic set-bg" data-setbg="{% static 'img/blog/blog-3.jpg' %}"></div>
+                        <div class="blog__item__text">
+                            <span><img src="{% static 'img/icon/calendar.png' %}" alt=""> 28 February 2020</span>
+                            <h5>The Health Benefits Of Sunglasses</h5>
+                            <a href="#">Read More</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Latest Blog Section End -->
+{% endblock %}

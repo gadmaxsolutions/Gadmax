@@ -1,0 +1,122 @@
+{% load static %}
+
+<!-- Offcanvas Menu Begin -->
+<div class="offcanvas-menu-overlay"></div>
+<div class="offcanvas-menu-wrapper">
+    <div class="offcanvas__option" style="margin-left: auto;margin-right:auto;">
+        {% if user.id is not None %}
+            <div class="offcanvas__top__hover">
+                <span>{{ user.first_name }}{{ user.last_name }}<i class="arrow_carrot-down"></i></span>
+                 <ul style="width:170px;flexbox:start; background-color:white;">
+                    <li> <a href="{% url 'dashboard' %}" style="font-size:17px;color:black;" onmouseover="this.style.color='grey'" onmouseout="this.style.color='black'">Dashboard</a></li>
+                    <li> <a href="{% url 'my_orders' %}" style="font-size:17px;color:black;" onmouseover="this.style.color='grey'" onmouseout="this.style.color='black'">My Orders</a></li>
+                    <li> <a href="{% url 'edit_profile' %}" style="font-size:17px;color:black;" onmouseover="this.style.color='grey'" onmouseout="this.style.color='black'">Edit Profile</a></li>
+                    <li> <a href="{% url 'change_password' %}" style="font-size:17px;color:black;" onmouseover="this.style.color='grey'" onmouseout="this.style.color='black'">Change Password</a></li>
+                    <li> <a href="{% url 'logout' %}" style="font-size:17px;color:black;" onmouseover="this.style.color='grey'" onmouseout="this.style.color='black'">Logout</a></li>
+                </ul>
+            </div>
+        {% else %}
+            <span>Guest User | </span>
+            <div class="header__top__links">
+                <a href="{% url 'login' %}" style="color:black;">Sign in</a>
+            </div>
+        {% endif %}
+    </div>
+    <div class="offcanvas__nav__option" style="display:flex">
+        <div class="shop__sidebar__search" style="margin-right:20px;margin-top:-5px;height:0;">
+            <form action="{% url 'search' %}" method="GET">
+                <input type="text" placeholder="Search..." name="keyword">
+                <button type="submit"><span class="icon_search"></span></button>
+            </form>
+        </div>
+        <a href="#"><img src="{% static 'img/icon/heart.png' %}" alt=""></a>
+        <a href="#"><img src="{% static 'img/icon/cart.png' %}" alt=""> <span>{{ cart_count }}</span></a>
+
+    </div>
+    <div id="mobile-menu-wrap"></div>
+    <div class="offcanvas__text">
+        <p>Free shipping, 7-days return or refund guarantee.</p>
+    </div>
+</div>
+<!-- Offcanvas Menu End -->
+
+<!-- Header Section Begin -->
+<header class="header">
+    <div class="header__top">
+        <div class="container" >
+            <div class="row">
+                <div class="col-lg-6 col-md-7">
+                    <div class="header__top__left">
+                        <p>Free shipping, 7-days return or refund guarantee.</p>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-5">
+                    <div class="header__top__right">
+                        <div class="header__top__hover">
+                            {% if user.id is not None %}
+                                <span>{{ user.first_name }} {{ user.last_name }}<i class="arrow_carrot-down"></i></span>
+                                <ul style="width:170px;flexbox:start;">
+                                    <li> <a href="{% url 'dashboard' %}" style="font-size:17px;color:grey;" onmouseover="this.style.color='black'" onmouseout="this.style.color='grey'">Dashboard</a></li>
+                                    <li> <a href="{% url 'my_orders' %}" style="font-size:17px;color:grey;" onmouseover="this.style.color='black'" onmouseout="this.style.color='grey'">My Orders</a></li>
+                                    <li> <a href="{% url 'edit_profile' %}" style="font-size:17px;color:grey;" onmouseover="this.style.color='black'" onmouseout="this.style.color='grey'">Edit Profile</a></li>
+                                    <li> <a href="{% url 'change_password' %}" style="font-size:17px;color:grey;" onmouseover="this.style.color='black'" onmouseout="this.style.color='grey'">Change Password</a></li>
+                                    <li> <a href="{% url 'logout' %}" style="font-size:17px;color:grey;" onmouseover="this.style.color='black'" onmouseout="this.style.color='grey'">Logout</a></li>
+                                </ul>
+                            {% else %}
+                                <span>Guest User | </span>
+                                <div class="header__top__links" style="margin-left: 5px;">
+                                    <a href="{% url 'login' %}" >Sign in</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container" >
+        <div class="row">
+            <div class="col-lg-2 col-md-2" >
+                <div class="header__logo" style="margin-top :-20px">
+                    <a href="{% url 'home' %}"><img src="{% static 'img/gadmaxnew.png' %}" alt="logo" height="70vh"></a>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6">
+                <nav class="header__menu mobile-menu">
+                    <ul>
+                        <li class="{% if active_page == 'home' %}active{% endif %}"><a href="{% url 'home' %}">Home</a></li>
+                        <li class="{% if active_page == 'shop' and not categories %}active{% endif %}"><a href="{% url 'store_app:shop' %}">Shop</a></li>
+                        <li class="{% if categories %}active{% endif %}"><a href="">Category</a>
+                            <ul class="dropdown">
+                                <li><a href="{% url 'store_app:shop' %}">All categories</a></li>
+                                {% for category in link %}
+                                    <li><a href="{{ category.get_url }}">{{ category.category_name }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                        <li class="{% if active_page == 'contacts'%}active{% endif %}"><a href="{% url 'contact' %}">Contact</a></li>
+                        <li class="{% if active_page == 'about' %}active{% endif %}"><a href="{% url 'about' %}">About</a></li>
+
+
+                    </ul>
+                </nav>
+            </div>
+            <div class="col-lg-4 col-md-3">
+                <div class="header__nav__option"  >
+                    <div class="shop__sidebar__search" style="margin-right:20px;margin-top:-5px;height:0;">
+                        <form action="{% url 'search' %}" method="GET">
+                            <input type="text" placeholder="Search..." name="keyword" >
+                            <button type="submit"><span class="icon_search"></span></button>
+                        </form>
+
+                    </div>
+                    <a href="#"><img src="{% static 'img/icon/heart.png' %}" alt=""></a>
+                    <a href="{% url 'cart' %}"><img src="{% static 'img/icon/cart.png' %}" alt="" style="height:20px;margin-right:3px;height:22px;"><span class="price">{{ cart_count }}</span> </a>
+
+                </div>
+            </div>
+        </div>
+        <div class="canvas__open"><i class="fa fa-bars"  style="width:25px;height:20px;"></i></div>
+    </div>
+</header>
+<!-- Header Section End -->

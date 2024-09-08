@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+
+<!-- Breadcrumb Section Begin -->
+<section class="breadcrumb-option">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb__text">
+                    <h4>Payment</h4>
+                    <div class="breadcrumb__links">
+                        <a href="./index.html">Home</a>
+                        <a href="./shop.html">cart</a>
+                        <span>Payment</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Breadcrumb Section End -->
+
+<!-- Shopping Cart Section Begin -->
+<section class="shopping-cart spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="shopping__cart__table">
+                    <div class="card mb-2">
+					  	<h4 class="card-header">Billing Details</h4>
+					  	<div class="card-body">
+							<p class="card-text mb-0">{{ order.full_name | capfirst }}</p>
+							<p class="card-text mb-0">{{ order.full_address}}</p>
+							<p class="card-text mb-0">{{ order.place_details }}</p>
+							<p class="card-text mb-0">Mobile : {{ order.mobile_no }}</p>
+							<p class="card-text mb-0">Email : {{ order.email }}</p>
+							{% if order.order_note %}
+								<p class="card-text mb-0"><b>Order note: </b>{{ order.order_note | capfirst}}</p>
+							{% endif %}
+					  	</div>
+					</div>
+                    <div class="card mb-2">
+					  	<h4 class="card-header">Review Products</h4>
+					  	<div class="card-body">
+							<table class="table table-borderless table-shopping-cart">
+								<thead class="text-muted">
+									<tr class="small text-uppercase text-center">
+
+										<th scope="col" width="120">Product</th>
+										<th scope="col" width="120">Quantity</th>
+										<th scope="col" width="120">Price</th>
+
+									</tr>
+								</thead>
+								<tbody>
+
+										<tr>
+											<td >
+												<figure class="itemside align-items-center " style="display:flex;">
+													<div class="aside" ><img src="{{ buy_direct_item.product.images.url }}" class="img-sm" alt="hello" style="height:15vh;width:100%"></div>
+													<div>
+														<figcaption class="info" style="padding-left:50px;">
+															<a href="{{ buy_direct_item.product.get_url }}" class="title text-dark ">{{ buy_direct_item.product.product_name }}</a>
+															<p class="text-muted small">
+																{% if buy_direct_item.variations.all %}
+																	{% for item in buy_direct_item.variations.all %}
+																		{{ item.variation_category | capfirst }} : {{ item.variation_value | capfirst }}
+																		<br>
+																	{% endfor %}
+																{% endif %}
+															</p>
+														</figcaption>
+													</div>
+												</figure>
+											</td>
+											<td>
+												<h5 class=" text-center "><b>{{ buy_direct_item.quantity }}</b></h5>
+											</td>
+											<td>
+												<div class="price-wrap">
+													<h5 class="text-center"><b><i class="fa-solid fa-indian-rupee-sign"></i> {{ buy_direct_item.sub_total }}</b></h5>
+
+												</div> <!-- price-wrap .// -->
+											</td>
+
+										</tr>
+
+								</tbody>
+							</table>
+					  	</div>
+					</div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="cart__total">
+                    <h6>Cart total</h6>
+                    <ul>
+                        <li>Total <span><i class="fa-solid fa-indian-rupee-sign"></i> {{ grand_total }}</span></li>
+                    </ul>
+						<form action="" method="POST">
+							{% csrf_token %}
+							<div id="rzp_payment_button">
+							<button type="submit" class="btn btn-dark w-100" id="rzp-button1">Pay now</button>
+							<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+						</div>
+						</form>
+
+<!--					<button class="btn btn-dark w-100" >Pay with razorpay</button>-->
+
+
+
+
+<!--					<form action="" >-->
+<!--						<button type="submit" id="rzp-button1">Pay Now</button>-->
+<!--						<script src="https://checkout.razorpay.com/v1/checkout.js"></script>-->
+<!--					</form>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Shopping Cart Section End -->
+
+<script>
+    var csrf_token = '{{ csrf_token }}';
+    var url = '{% url "payment" %}';
+    var redirect_url = '{% url "order_complete" %}';
+
+    var options = {
+        "key": "{{ RZP_KEY_ID }}", // Enter the Key ID generated from the Dashboard
+        "amount": "{{ RZP_AMOUNT }}", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+        "currency": "INR",
+        "name": "Next Gen Mallu", // your business name
+        "description": "Smart Devices selling platform",
+        //"image": "https://example.com/your_logo",
+        "order_id": "{{ rzp_order_id }}", // This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+        "handler": function (response) {
+            function sendData() {
+			 	fetch(url, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						"X-CSRFToken": csrf_token,
+					},
+					body: JSON.stringify({
+						razorpay_payment_id: response.razorpay_payment_id,
+						razorpay_order_id: response.razorpay_order_id,
+						razorpay_signature: response.razorpay_signature,
+					}),
+				})
+				.then((response) => {
+					if (response.redirected) {
+						window.location.href = response.url;
+					} else {
+						return response.json();
+					}
+				})
+				.then((data) => {
+					if (data.error) {
+						console.error('Backend Error:', data.error);
+						alert('Payment processing failed: ' + data.error);
+					} else {
+						console.log('Success:', data);
+						window.location.href = redirect_url + "?order_number=" + data.order_number + "&payment_id=" + data.payment_id;
+					}
+				})
+
+				// uncomment below when there was a bug while payments starts
+
+				//.catch((error) => {
+				//	console.error('Error details:', error.message || error);
+				//	alert('Payment processing failed. Please try again.');
+				//});
+
+				// ends
+			}
+
+            // Call the function to send data to backend
+            sendData();
+        },
+        "prefill": {
+            "name": "{{ order.user.full_name }}", // your customer's name
+            "email": "{{ order.email }}",
+            "contact": "{{ order.mobile_no }}" // Provide the customer's phone number for better conversion rates
+        },
+        "notes": {
+            "address": "{{ order.address }}"
+        },
+        "theme": {
+            "color": "#343a40"
+        }
+    };
+
+    var rzp1 = new Razorpay(options);
+
+    rzp1.on('payment.failed', function (response) {
+    	console.error('Payment Failed:', response.error);
+        alert('Payment failed due to: ' + response.error.description);
+    });
+
+    document.getElementById('rzp-button1').onclick = function (e) {
+        rzp1.open();
+        e.preventDefault();
+    }
+</script>
+
+{% endblock %}
+

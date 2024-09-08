@@ -1,0 +1,373 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Breadcrumb Section Begin -->
+<section class="breadcrumb-option">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb__text">
+                    <h4>Product Details</h4>
+                    <div class="breadcrumb__links">
+                        <a href="{% url 'home' %}">Home</a>
+                        <a href="{% url 'store_app:shop' %}">Shop</a>
+                        <span>Product Details</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Breadcrumb Section End -->
+
+<!-- Shop Details Section Begin -->
+<section class="shop-details">
+    <div class="product__details__pic">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-3">
+                    <ul class="nav nav-tabs" role="tablist">
+                        {% for i in product_gallery %}
+                            <li class="nav-item">
+                                <a class="nav-link active" data-toggle="tab" href="javascript:void(0);"  role="tab">
+                                    <img class="product__thumb__pic set-bg" src="{{ i.image.url }}" onclick="changeMainImage('{{ i.image.url }}')">
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="col-lg-6 col-md-9">
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="tabs-1" role="tabpanel">
+                            <div class="product__details__pic__item mainImage" >
+                                <img id="main-product-image" src="{% if product_gallery.0.image.url %}{{ product_gallery.0.image.url }}{% else %}{{ single_product.images.url }}{% endif %}" alt="product_image_1" style="height:500px;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="product__details__content">
+        <div class="container">
+            <form action="{% url 'buy_now' single_product.id %}" method="POST">
+                {% csrf_token %}
+                <div class="row d-flex justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="product__details__text">
+                            <h4>{{ single_product.product_name }} </h4>
+                            {% if single_product.averageReview %}
+                                <div class="rating-star">
+                                    <h6>{{ single_product.averageReview }} / 5 rating</h6>
+                                    <i class="fa fa-star{% if single_product.averageReview < 0.5 %}-o{% elif single_product.averageReview >= 0.5 and single_product.averageReview < 1 %}-half-o{% endif %}" aria-hidden="true"></i>
+                                    <i class="fa fa-star{% if single_product.averageReview < 1.5 %}-o{% elif single_product.averageReview >= 1.5 and single_product.averageReview < 2 %}-half-o{% endif %}" aria-hidden="true"></i>
+                                    <i class="fa fa-star{% if single_product.averageReview < 2.5 %}-o{% elif single_product.averageReview >= 2.5 and single_product.averageReview < 3 %}-half-o{% endif %}" aria-hidden="true"></i>
+                                    <i class="fa fa-star{% if single_product.averageReview < 3.5 %}-o{% elif single_product.averageReview >= 3.5 and single_product.averageReview < 4 %}-half-o{% endif %}" aria-hidden="true"></i>
+                                    <i class="fa fa-star{% if single_product.averageReview < 4.5 %}-o{% elif single_product.averageReview >= 4.5 and single_product.averageReview < 5 %}-half-o{% endif %}" aria-hidden="true"></i>
+                                    <span> ( {{ single_product.countReview }} Reviews )</span>
+                                </div>
+                            {% endif %}
+
+
+
+                            <h3> <i class="fa-solid fa-indian-rupee-sign"></i> {{ single_product.price }}<span>70.00</span></h3>
+                            <p>{{ single_product.description }}</p>
+
+                            <div class="product__details__cart__option">
+
+                                {% if single_product.stock <= 0 %}
+                                    <p href="" class="secondary-btn" style="background-color: #c91b1b;display: inline-block;font-size: 13px;font-weight: 700;text-transform: uppercase;padding: 14px 30px;color: #ffffff;;letter-spacing: 4px; font-size:20px">Out Of Stock</p>
+                                {% else %}
+
+                                        {% if single_product.variation_set.colors %}
+                                            <div class="product__details__option">
+                                                <div class="product__details__option__color">
+                                                    <select name="color" class="form-control" required>
+                                                        <option disabled selected>select Color</option>
+                                                        {% for i in single_product.variation_set.colors %}
+                                                            <option value="{{ i.variation_value | lower }}">{{ i.variation_value | capfirst }}</option>
+                                                        {% endfor %}
+
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                        <!-- Add to Cart Button -->
+<!--                                        <button type="submit" name="action" value="add_to_cart" class="primary-btn" style="background-color: #31a640">add to cart</button>-->
+                                        <!-- Buy Now Button -->
+<!--                                        <button type="submit" name="action" value="buy_now" class="primary-btn" style="background-color: #ff4b2b">buy now</button>-->
+                                        <button type="submit" class="primary-btn" style="background-color: black">buy now</button>
+
+                                {% endif %}
+                            </div>
+                            <div class="product__details__btns__option">
+                                <a href="#"><i class="fa fa-heart"></i> add to wishlist</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="col-lg-12 col-md-12" >
+
+                <form action="{% url 'store_app:submit_review' single_product.id %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {% if user.is_authenticated %}
+                        {% if orderproduct %}
+                            <header class="section-heading">
+                                <h3>Write Your Review </h3>
+                            </header>
+                            <div class="contact__form" >
+                                <!--Rating Stars-->
+                                <label style="padding: 20px 20px 0% 20px"> How do you rate this product</label>
+                                <br>
+                                <div class="rate" style="padding-left:20px">
+                                    <input type="radio" style="margin-right:10px" name="rating" id="rating10" value="5" required><label for="rating10" title="5"></label>
+                                    <input type="radio" style="margin-right:10px" name="rating" id="rating9" value="4.5" required><label for="rating9" title="4.5" class="half"></label>
+                                    <input type="radio" style="margin-right:10px" name="rating" id="rating8" value="4" required><label for="rating8" title="4"></label>
+                                    <input type="radio" style="margin-right:10px" name="rating" id="rating7" value="3.5" required><label for="rating7" title="3.5" class="half"></label>
+                                    <input type="radio" style="margin-right:10px" name="rating" id="rating6" value="3" required><label for="rating6" title="3"></label>
+                                    <input type="radio" style="margin-right:10px" name="rating" id="rating5" value="2.5" required><label for="rating5" title="2.5" class="half"></label>
+                                    <input type="radio" style="margin-right:10px" name="rating" id="rating4" value="2" required><label for="rating4" title="2"></label>
+                                    <input type="radio" style="margin-right:10px" name="rating" id="rating3" value="1.5" required><label for="rating3" title="1.5" class="half"></label>
+                                    <input type="radio" style="margin-right:10px" name="rating" id="rating2" value="1" required><label for="rating2" title="1"></label>
+                                    <input type="radio" style="margin-right:10px" name="rating" id="rating1" value="0.5" required><label for="rating1" title="0.5" class="half"></label>
+                                </div>
+
+                                <div class="col-lg-9" style="padding-top:1%">
+                                    <input type="text" placeholder="Review Title" name="subject">
+                                </div><br>
+                                <div class="col-lg-9" style="padding-top:0%">
+                                    <textarea  placeholder="Review" name="review"  rows="4" cols="80" ></textarea>
+                                </div>
+                                {% include 'includes/alerts.html' %}
+
+                                <input type="submit" class="site-btn" value="Submit Review" style="width:200px;margin-left:13px">
+                            </div>
+                        {% else %}
+                            <p style="margin-left:13px">You must Purchase to post a review </p>
+
+                        {% endif %}
+                    {% else %}
+                        <p>You must be logged in to post a review. <span><a href="{% url 'login' %}">Login now</a></span></p>
+                    {% endif %}
+                </form>
+				<br>
+            </div>
+        </div>
+        <div class="row" style="padding-left:10%;">
+			<div class="col-md-11" >
+                <header class="section-heading">
+                    <h3>Customer Reviews </h3>
+                    <div class="rating-star" style="padding:10px 0 20px 0; display:flex;">
+                        <h5 >
+
+
+                            <i class="fa fa-star{% if single_product.averageReview < 0.5 %}-o{% elif single_product.averageReview >= 0.5 and single_product.averageReview < 1 %}-half-o{% endif %}" aria-hidden="true"></i>
+                            <i class="fa fa-star{% if single_product.averageReview < 1.5 %}-o{% elif single_product.averageReview >= 1.5 and single_product.averageReview < 2 %}-half-o{% endif %}" aria-hidden="true"></i>
+                            <i class="fa fa-star{% if single_product.averageReview < 2.5 %}-o{% elif single_product.averageReview >= 2.5 and single_product.averageReview < 3 %}-half-o{% endif %}" aria-hidden="true"></i>
+                            <i class="fa fa-star{% if single_product.averageReview < 3.5 %}-o{% elif single_product.averageReview >= 3.5 and single_product.averageReview < 4 %}-half-o{% endif %}" aria-hidden="true"></i>
+                            <i class="fa fa-star{% if single_product.averageReview < 4.5 %}-o{% elif single_product.averageReview >= 4.5 and single_product.averageReview < 5 %}-half-o{% endif %}" aria-hidden="true"></i>
+
+                        </h5>
+                        <p style="padding-left:10px;"><b>{{ single_product.averageReview }}/5</b> ({{ single_product.countReview }} reviews)</p>
+                    </div>
+                </header>
+                {% for review in reviews %}
+                <div class="col-lg-9 card w-75 mb-3" >
+
+                    <article class="box mb-3">
+                        <div class="icontext w-100 card-body " style="display:flex;width:200px margin-right:20px">
+                            <img src="{% if review.userprofile and review.userprofile.profile_picture %}{{ review.userprofile.profile_picture.url }}{% else %}{% static 'img/blank_profile.png' %}{% endif %}" class="img-xs icon rounded-circle" style="width:50px;height:50px;margin-top:20px">
+                            <div class="text" style="margin-left:20px; margin-top:15px">
+                                <h5 class="mb-1">{{ review.user.full_name }}</h5>
+                                <div class="rating-star">
+                                    <h5>
+                                        <i class="fa fa-star{% if review.rating == 0.5 %}-half-o{% elif review.rating < 1 %}-o{% endif %}" aria-hidden="true"></i>
+                                        <i class="fa fa-star{% if review.rating == 1.5 %}-half-o{% elif review.rating < 2 %}-o{% endif %}" aria-hidden="true"></i>
+                                        <i class="fa fa-star{% if review.rating == 2.5 %}-half-o{% elif review.rating < 3 %}-o{% endif %}" aria-hidden="true"></i>
+                                        <i class="fa fa-star{% if review.rating == 3.5 %}-half-o{% elif review.rating < 4 %}-o{% endif %}" aria-hidden="true"></i>
+                                        <i class="fa fa-star{% if review.rating == 4.5 %}-half-o{% elif review.rating < 5 %}-o{% endif %}" aria-hidden="true"></i>
+                                        <p>({{ review.rating }} rating)</p>
+                                    </h5>
+
+                                </div>
+
+                            </div>
+                        </div> <!-- icontext.// -->
+
+                        <div class="" style="padding-left:11%;margin-top:-3%">
+                            <h6><b>{{ review.subject }}</b></h6>
+                            <p>
+                                {{ review.review }}
+
+                            </p>
+                        </div>
+                        <span class="date text-muted float-md-left" style="padding-left:11%">{{ review.updated_at }}</span>
+                    </article>
+
+
+                </div>
+                {% endfor %}
+            </div> <!-- col./-->
+        </div>
+    </div>
+</section>
+<!-- Shop Details Section End -->
+
+<!-- Related Section Begin -->
+<!--<section class="related spad">-->
+<!--    <div class="container">-->
+<!--        <div class="row">-->
+<!--            <div class="col-lg-12">-->
+<!--                <h3 class="related-title">Related Product</h3>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="row">-->
+<!--            <div class="col-lg-3 col-md-6 col-sm-6 col-sm-6">-->
+<!--                <div class="product__item">-->
+<!--                    <div class="product__item__pic set-bg" data-setbg="{% static 'img/product/product-1.jpg' %}">-->
+<!--                        <span class="label">New</span>-->
+<!--                        <ul class="product__hover">-->
+<!--                            <li><a href="#"><img src="{% static 'img/icon/heart.png' %}" alt=""></a></li>-->
+<!--                            <li><a href="#"><img src="{% static 'img/icon/compare.png' %}" alt=""> <span>Compare</span></a></li>-->
+<!--                            <li><a href="#"><img src="{% static 'img/icon/search.png' %}" alt=""></a></li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                    <div class="product__item__text">-->
+<!--                        <h6>Piqué Biker Jacket</h6>-->
+<!--                        <a href="#" class="add-cart">+ Add To Cart</a>-->
+<!--                        <div class="rating">-->
+<!--                            <i class="fa fa-star-o"></i>-->
+<!--                            <i class="fa fa-star-o"></i>-->
+<!--                            <i class="fa fa-star-o"></i>-->
+<!--                            <i class="fa fa-star-o"></i>-->
+<!--                            <i class="fa fa-star-o"></i>-->
+<!--                        </div>-->
+<!--                        <h5>$67.24</h5>-->
+<!--                        <div class="product__color__select">-->
+<!--                            <label for="pc-1">-->
+<!--                                <input type="radio" id="pc-1">-->
+<!--                            </label>-->
+<!--                            <label class="active black" for="pc-2">-->
+<!--                                <input type="radio" id="pc-2">-->
+<!--                            </label>-->
+<!--                            <label class="grey" for="pc-3">-->
+<!--                                <input type="radio" id="pc-3">-->
+<!--                            </label>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="col-lg-3 col-md-6 col-sm-6 col-sm-6">-->
+<!--                <div class="product__item">-->
+<!--                    <div class="product__item__pic set-bg" data-setbg="img/product/product-2.jpg">-->
+<!--                        <ul class="product__hover">-->
+<!--                            <li><a href="#"><img src="img/icon/heart.png" alt=""></a></li>-->
+<!--                            <li><a href="#"><img src="img/icon/compare.png" alt=""> <span>Compare</span></a></li>-->
+<!--                            <li><a href="#"><img src="img/icon/search.png" alt=""></a></li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                    <div class="product__item__text">-->
+<!--                        <h6>Piqué Biker Jacket</h6>-->
+<!--                        <a href="#" class="add-cart">+ Add To Cart</a>-->
+<!--                        <div class="rating">-->
+<!--                            <i class="fa fa-star-o"></i>-->
+<!--                            <i class="fa fa-star-o"></i>-->
+<!--                            <i class="fa fa-star-o"></i>-->
+<!--                            <i class="fa fa-star-o"></i>-->
+<!--                            <i class="fa fa-star-o"></i>-->
+<!--                        </div>-->
+<!--                        <h5>$67.24</h5>-->
+<!--                        <div class="product__color__select">-->
+<!--                            <label for="pc-4">-->
+<!--                                <input type="radio" id="pc-4">-->
+<!--                            </label>-->
+<!--                            <label class="active black" for="pc-5">-->
+<!--                                <input type="radio" id="pc-5">-->
+<!--                            </label>-->
+<!--                            <label class="grey" for="pc-6">-->
+<!--                                <input type="radio" id="pc-6">-->
+<!--                            </label>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="col-lg-3 col-md-6 col-sm-6 col-sm-6">-->
+<!--                <div class="product__item sale">-->
+<!--                    <div class="product__item__pic set-bg" data-setbg="img/product/product-3.jpg">-->
+<!--                        <span class="label">Sale</span>-->
+<!--                        <ul class="product__hover">-->
+<!--                            <li><a href="#"><img src="img/icon/heart.png" alt=""></a></li>-->
+<!--                            <li><a href="#"><img src="img/icon/compare.png" alt=""> <span>Compare</span></a></li>-->
+<!--                            <li><a href="#"><img src="img/icon/search.png" alt=""></a></li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                    <div class="product__item__text">-->
+<!--                        <h6>Multi-pocket Chest Bag</h6>-->
+<!--                        <a href="#" class="add-cart">+ Add To Cart</a>-->
+<!--                        <div class="rating">-->
+<!--                            <i class="fa fa-star"></i>-->
+<!--                            <i class="fa fa-star"></i>-->
+<!--                            <i class="fa fa-star"></i>-->
+<!--                            <i class="fa fa-star"></i>-->
+<!--                            <i class="fa fa-star-o"></i>-->
+<!--                        </div>-->
+<!--                        <h5>$43.48</h5>-->
+<!--                        <div class="product__color__select">-->
+<!--                            <label for="pc-7">-->
+<!--                                <input type="radio" id="pc-7">-->
+<!--                            </label>-->
+<!--                            <label class="active black" for="pc-8">-->
+<!--                                <input type="radio" id="pc-8">-->
+<!--                            </label>-->
+<!--                            <label class="grey" for="pc-9">-->
+<!--                                <input type="radio" id="pc-9">-->
+<!--                            </label>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="col-lg-3 col-md-6 col-sm-6 col-sm-6">-->
+<!--                <div class="product__item">-->
+<!--                    <div class="product__item__pic set-bg" data-setbg="img/product/product-4.jpg">-->
+<!--                        <ul class="product__hover">-->
+<!--                            <li><a href="#"><img src="img/icon/heart.png" alt=""></a></li>-->
+<!--                            <li><a href="#"><img src="img/icon/compare.png" alt=""> <span>Compare</span></a></li>-->
+<!--                            <li><a href="#"><img src="img/icon/search.png" alt=""></a></li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                    <div class="product__item__text">-->
+<!--                        <h6>Diagonal Textured Cap</h6>-->
+<!--                        <a href="#" class="add-cart">+ Add To Cart</a>-->
+<!--                        <div class="rating">-->
+<!--                            <i class="fa fa-star-o"></i>-->
+<!--                            <i class="fa fa-star-o"></i>-->
+<!--                            <i class="fa fa-star-o"></i>-->
+<!--                            <i class="fa fa-star-o"></i>-->
+<!--                            <i class="fa fa-star-o"></i>-->
+<!--                        </div>-->
+<!--                        <h5>$60.9</h5>-->
+<!--                        <div class="product__color__select">-->
+<!--                            <label for="pc-10">-->
+<!--                                <input type="radio" id="pc-10">-->
+<!--                            </label>-->
+<!--                            <label class="active black" for="pc-11">-->
+<!--                                <input type="radio" id="pc-11">-->
+<!--                            </label>-->
+<!--                            <label class="grey" for="pc-12">-->
+<!--                                <input type="radio" id="pc-12">-->
+<!--                            </label>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</section>-->
+<!-- Related Section End -->
+
+
+{% endblock %}
+

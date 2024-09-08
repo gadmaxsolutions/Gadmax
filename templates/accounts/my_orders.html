@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!-- Breadcrumb Section Begin -->
+    <section class="breadcrumb-option">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="breadcrumb__text">
+                        <h4>My Orders</h4>
+                        <div class="breadcrumb__links">
+                            <a href="{% url 'home' %}">Home</a>
+                            <span>My Orders</span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Breadcrumb Section End -->
+
+	<!-- ========================= SECTION CONTENT ========================= -->
+	<section class="section-conten padding-y bg" >
+
+	<div class="container" style="padding:20px 0">
+		<div class="row">
+		<main class="col-md-10">
+			<article class="card">
+				<header class="card-header">
+					<strong class="d-inline-block mr-3">Your order history</strong>
+				</header>
+				<div class="card-body">
+					<div class="row">
+						<div class="col-md-12">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="text-center">Order #</th>
+                                        <th scope="col" class="text-center">Billing Name</th>
+                                        <th scope="col" class="text-center">Phone</th>
+                                        <th scope="col" class="text-center">Order Total</th>
+                                        <th scope="col" class="text-center">Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in orders %}
+                                        <tr>
+                                            <th scope="row" class="text-center"><a href="{% url 'order_details' item.order_number %}" style="font-size:15px;color:grey;" onmouseover="this.style.color='black'" onmouseout="this.style.color='grey'">#{{ item.order_number }}</a></th>
+                                            <td class="text-center">{{ item.full_name }}</td>
+                                            <td class="text-center">{{ item.mobile_no }}</td>
+                                            <td class="text-center"><i class="fa-solid fa-indian-rupee-sign" style="width:20px"></i>{{ item.order_total }}</td>
+                                            <td class="text-center">{{ item.updated_at }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+						</div>
+					</div>
+				</div>
+			</article>
+		</main>
+	</div>
+	</div>
+
+
+	</section>
+	<!-- ========================= SECTION CONTENT END// ========================= -->
+
+{% endblock %}
